@@ -20,7 +20,7 @@ def main():
 
 
 def get_logo():
-    image = Image.open("assets/images/marca-axys.png")
+    image = Image.open("https://raw.githubusercontent.com/lorransr/axyz-dashboard/master/app/assets/images/marca-axys.png")
     im = image.convert("RGBA")
 
     data = np.array(im)  # "data" is a height x width x 4 numpy array
