@@ -6,7 +6,7 @@ import urllib
 import json
 import numpy as np
 import requests
-from StringIO import StringIO
+from io import StringIO
 from PIL import Image
 import sdk, about
 
