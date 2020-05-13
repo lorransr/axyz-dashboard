@@ -5,8 +5,11 @@ import streamlit as st
 import urllib
 import json
 import numpy as np
+import requests
+from io import BytesIO
 from PIL import Image
 import sdk, about
+
 
 
 def main():
@@ -20,7 +23,9 @@ def main():
 
 
 def get_logo():
-    image = Image.open("assets/images/marca-axys.png")
+    url = "https://raw.githubusercontent.com/lorransr/axyz-dashboard/master/app/assets/images/marca-axys.png"
+    response = requests.get(url)
+    image = Image.open(BytesIO(response.content))
     im = image.convert("RGBA")
 
     data = np.array(im)  # "data" is a height x width x 4 numpy array
