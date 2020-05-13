@@ -149,8 +149,12 @@ def get_driver_summary(data):
 def load_page(data):
     daily_overview = get_daily_overview_plot(data)
     version_overview = get_version_overview_plot(data)
-    st.plotly_chart(daily_overview)
-    st.plotly_chart(version_overview)
+    st.plotly_chart(
+        daily_overview,
+        config=dict(displayModeBar=False))
+    st.plotly_chart(
+        version_overview,
+        config=dict(displayModeBar=False))
     st.markdown("### %Correct x User x Position")
     df_driver = get_driver_summary(data)
     # st_ms = st.multiselect("Columns", df_driver.columns.tolist(),df_driver.columns.tolist())
