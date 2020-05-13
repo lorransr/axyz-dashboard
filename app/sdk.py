@@ -25,41 +25,50 @@ def get_daily_overview_plot(data):
             selected_columns.append(column)
     df_daily_filtered = df_daily[selected_columns]
 
-    # fill empty days
-    first_date = df_daily_filtered.loc[0, "ride_end"]
-    last_date = df_daily_filtered.iloc[-1, 0]
-    idx = pd.date_range(first_date, last_date)
-    idx.name = "ride_end"
-    df_daily_reindexed = (
-        df_daily_filtered.set_index("ride_end").reindex(idx, fill_value=0).reset_index()
-    )
+    # resample in year_week
+    df_daily_filtered = df_daily[selected_columns].copy()
+    year_week = df_daily_filtered.ride_end.dt.strftime("%Y-%U")
+    df_daily_filtered.insert(0,"year_week",year_week)
 
+
+    df_daily_reindexed = (df_daily_filtered
+                        .groupby("year_week")[selected_columns[1:]]
+                        .sum()
+                        .reset_index())
     # prepare df to plot
-    df_daily_melted = df_daily_reindexed.melt(id_vars="ride_end")
-    df_daily_melted.columns = ["date", "calibration_result", "count"]
+    df_daily_melted = df_daily_reindexed.melt(id_vars="year_week")
+    df_daily_melted.columns = ["year_week","calibration_result","count"]
 
     #calculating percentage
     df_perct = df_daily_reindexed.iloc[:,1:]
     df_perct = df_perct.div(df_perct.sum(axis=1), axis=0)
-    df_perct.loc[:,"ride_end"] = df_daily_reindexed.ride_end
-    df_perct_melted = df_perct.melt(id_vars="ride_end")
+    df_perct.loc[:,"year_week"] = df_daily_reindexed.year_week
+    df_perct_melted = df_perct.melt(id_vars="year_week")
     df_daily_melted.loc[:,"percentage"] = df_perct_melted["value"]
 
     # generate figure
     fig = px.bar(
         df_daily_melted,
-        x="date",
+        x="year_week",
         y="count",
         color="calibration_result",
         color_discrete_map=color_dict,
         hover_data= {
             "percentage":":.1%"}
     )
-    fig.update_xaxes(title="Recent Trips")
-    fig.update_yaxes(title="Number of Trips")
+    fig.update_xaxes(title = "Year - Week")
+    fig.update_yaxes(title = "Number of Trips")
     fig.update_layout(
-        title="Calibrations Results per Day", xaxis=dict(tickmode="linear",)
+        xaxis = dict(
+            tickmode = 'linear',
+            fixedrange = True
+        ),
+        yaxis = dict(
+            fixedrange = True
+        )
     )
+    for trace in fig.data:
+        trace.name = trace.name.replace("_"," ")
 
     return fig
 
@@ -90,14 +99,26 @@ def get_version_overview_plot(data):
     fig = px.bar(
         df_version_melted,
         x="sdk_version",
-        y="count",
+        y="percentage",
         color="calibration_result",
-        color_discrete_map=color_dict,
-        hover_data={"percentage":":.1%"}
+        # color_discrete_map=color_dict,
+        hover_data={"percentage":":.1%",
+                    "count":True}
     )
     fig.update_xaxes(title="SDK version")
     fig.update_yaxes(title="Number of Trips")
-    fig.update_layout(title="Calibrations Results per SDK Versions")
+    fig.update_layout(title="Calibrations Results per SDK Versions",
+                    xaxis = dict(
+                        tickmode = 'linear',
+                        fixedrange = True
+                        ),
+                    yaxis = dict(
+                        fixedrange = True
+                        )
+                    )
+    for trace in fig.data:
+        trace.name = trace.name.replace("_"," ")
+
     return fig
 
 
