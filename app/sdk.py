@@ -59,6 +59,7 @@ def get_daily_overview_plot(data):
     fig.update_xaxes(title = "Year - Week")
     fig.update_yaxes(title = "Number of Trips")
     fig.update_layout(
+        title="Calibrations Results per Week of Year",
         xaxis = dict(
             tickmode = 'linear',
             fixedrange = True
@@ -101,21 +102,23 @@ def get_version_overview_plot(data):
         x="sdk_version",
         y="percentage",
         color="calibration_result",
-        # color_discrete_map=color_dict,
+        color_discrete_map=color_dict,
         hover_data={"percentage":":.1%",
                     "count":True}
     )
     fig.update_xaxes(title="SDK version")
     fig.update_yaxes(title="Number of Trips")
-    fig.update_layout(title="Calibrations Results per SDK Versions",
-                    xaxis = dict(
-                        tickmode = 'linear',
-                        fixedrange = True
-                        ),
-                    yaxis = dict(
-                        fixedrange = True
-                        )
-                    )
+    fig.update_layout(
+        title="Calibrations Results per SDK Versions",
+        xaxis = dict(
+            tickmode = 'linear',
+            fixedrange = True
+            ),
+        yaxis = dict(
+            fixedrange = True
+            ),
+        yaxis_tickformat = '%'
+        )
     for trace in fig.data:
         trace.name = trace.name.replace("_"," ")
 
