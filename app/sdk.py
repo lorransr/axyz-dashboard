@@ -54,7 +54,9 @@ def get_daily_overview_plot(data):
         color="calibration_result",
         color_discrete_map=color_dict,
         hover_data= {
-            "percentage":":.1%"}
+            "percentage":":.1%"},
+        width=350,
+        height=400
     )
     fig.update_xaxes(title = "Year - Week")
     fig.update_yaxes(title = "Number of Trips")
@@ -104,7 +106,9 @@ def get_version_overview_plot(data):
         color="calibration_result",
         color_discrete_map=color_dict,
         hover_data={"percentage":":.1%",
-                    "count":True}
+                    "count":True},
+        width=350,
+        height=400
     )
     fig.update_xaxes(title="SDK version")
     fig.update_yaxes(title="Number of Trips")
