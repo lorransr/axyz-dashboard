@@ -124,10 +124,22 @@ def get_version_overview_plot(data):
 
     return fig
 
+def path_to_image(pose):
+    path = "https://raw.githubusercontent.com/lorransr/axyz-dashboard/master/app/assets/images/positions/{}.png".format(pose)
+    return '<img src="'+ path + '" width="60" >'
 
 def get_driver_summary(data):
     df_driver = pd.DataFrame(data["driver_summary"])
-    return df_driver
+    df_driver.loc[:,"user_response_pose"] = df_driver.user_response_pose.astype("int")
+    df_driver.loc[:,"position_image"] = (df_driver
+    .user_response_pose
+    .apply(lambda x: path_to_image(x)))
+    df_driver = df_driver[df_driver.user_response_pose != 0]
+    new_columns = []
+    for column in df_driver.columns:
+        new_columns.append(column.replace("_"," "))
+    df_driver.columns  = new_columns
+    return df_driver.to_html(escape=False)
 
 
 def load_page(data):
@@ -137,5 +149,5 @@ def load_page(data):
     st.plotly_chart(version_overview)
     st.markdown("### %Correct x User x Position")
     df_driver = get_driver_summary(data)
-    st_ms = st.multiselect("Columns", df_driver.columns.tolist(),df_driver.columns.tolist())
-    st.dataframe(df_driver.loc[:,st_ms])
+    # st_ms = st.multiselect("Columns", df_driver.columns.tolist(),df_driver.columns.tolist())
+    st.markdown(df_driver, unsafe_allow_html=True)
