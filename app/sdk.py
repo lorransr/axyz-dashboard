@@ -93,7 +93,7 @@ def get_version_overview_plot(data):
     )
 
     #calculating percentage
-    df_perct = df_version.iloc[:,1:4]
+    df_perct = df_version[selected_columns]
     df_perct = df_perct.div(df_perct.sum(axis=1), axis=0)
     df_perct.loc[:,"sdk_version"] = df_version.sdk_version
     df_perct_melted = df_perct.melt(id_vars="sdk_version")
