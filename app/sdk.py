@@ -99,6 +99,12 @@ def get_version_overview_plot(data):
     df_perct_melted = df_perct.melt(id_vars="sdk_version")
     df_version_melted.loc[:,"percentage"] = df_perct_melted["value"]
 
+    #ordering data
+    df_version_melted.loc[:,"lvl1"] = df_version_melted.sdk_version.apply(lambda x: int(x.split(".")[0]))
+    df_version_melted.loc[:,"lvl2"] = df_version_melted.sdk_version.apply(lambda x: int(x.split(".")[1]))
+    df_version_melted.loc[:,"lvl3"] = df_version_melted.sdk_version.apply(lambda x: int(x.split(".")[2]))
+    df_version_melted.sort_values(by=["lvl1","lvl2","lvl3"],ascending=True,inplace=True)
+
     fig = px.bar(
         df_version_melted,
         x="sdk_version",
@@ -143,7 +149,9 @@ def get_driver_summary(data):
     for column in df_driver.columns:
         new_columns.append(column.replace("_"," "))
     df_driver.columns  = new_columns
-    return df_driver.to_html(escape=False)
+    float_frmt = lambda x: '{:,.0f}'.format(x) if x > 1e3 else '{:,.1f}'.format(x)
+    frmt = {"accuracy":float_frmt}
+    return df_driver.to_html(escape=False,formatters = frmt)
 
 
 def load_page(data):
